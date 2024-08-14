@@ -33,26 +33,26 @@ async function run() {
         const checkoutCollection = client.db("carDoctor").collection("checkouts");
 
         //get all services
-        app.get('/services', async(req, res) => {
+        app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })
 
         //get a specific service via id
-        app.get('/services/:id', async(req, res) => {
+        app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await serviceCollection.findOne(query);
             res.send(result);
         })
 
         //get all checkout data
-        app.get('/checkouts', async(req, res) => {
+        app.get('/checkouts', async (req, res) => {
             console.log(req.query);
             let query = {};
-            if(req.query?.email){
-                query = {email: req.query.email};
+            if (req.query?.email) {
+                query = { email: req.query.email };
             }
             const cursor = checkoutCollection.find(query);
             const result = await cursor.toArray();
@@ -60,19 +60,33 @@ async function run() {
         })
 
         //post data to checkout collection
-        app.post('/checkouts', async(req, res)=> {
+        app.post('/checkouts', async (req, res) => {
             const checkout = req.body;
-            
+
             const result = await checkoutCollection.insertOne(checkout);
             res.send(result);
         })
 
         //delete a specific checkout
-        app.delete('/checkouts/:id', async(req, res)=> {
+        app.delete('/checkouts/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)};
-            
+            const query = { _id: new ObjectId(id) };
+
             const result = await checkoutCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        //update a specific checkout data
+        app.patch('/checkouts/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const update = req.body;
+            const updateCheckout = {
+                $set: {
+                    status: update.status,
+                },
+            };
+            const result = await checkoutCollection.updateOne(filter, updateCheckout);
             res.send(result);
         })
 
