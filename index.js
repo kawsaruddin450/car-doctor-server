@@ -47,6 +47,18 @@ async function run() {
             res.send(result);
         })
 
+        //get all checkout data
+        app.get('/checkouts', async(req, res) => {
+            console.log(req.query);
+            let query = {};
+            if(req.query?.email){
+                query = {email: req.query.email};
+            }
+            const cursor = checkoutCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
         //post data to checkout collection
         app.post('/checkouts', async(req, res)=> {
             const checkout = req.body;
